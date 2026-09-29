@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Duty Roster — 1 Year Planner</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f2f2f7;--paper:#ffffff;--paper2:#f2f2f7;--rule:#e5e5ea;
+  --ink:#1c1c1e;--ink2:#3a3a3c;--muted:#8e8e93;
+  --mb:#fff3e0;--mbd:#ffb74d;--mt:#e65100;
+  --eb:#e3f2fd;--ebd:#64b5f6;--et:#0d47a1;
+  --nb:#ede7f6;--nbd:#9575cd;--nt:#311b92;
+  --ob:#e8f5e9;--obd:#66bb6a;--ot:#1b5e20;
+  --accent:#007aff;
+  --red:#ff3b30;--green:#34c759;--blue:#007aff;--orange:#ff9500;--purple:#af52de;
+}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',Arial,sans-serif;
+  font-size:14px;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ── HEADER ── */
+.hdr{
+  background:rgba(255,255,255,0.85);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:0.5px solid var(--rule);
+  padding:env(safe-area-inset-top,0) 0 0;
+  position:sticky;top:0;z-index:200;
+}
+.hdr-inner{
+  max-width:1200px;margin:0 auto;
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.hdr-left{display:flex;align-items:baseline;gap:10px;}
+.hdr-title{
+  font-size:17px;font-weight:700;letter-spacing:-.4px;color:var(--ink);
+}
+.hdr-sub{font-size:13px;color:var(--muted);font-weight:400;letter-spacing:-.2px;}
+.date-chip{
+  background:var(--mb);border:1px solid var(--mbd);
+  border-radius:20px;padding:5px 14px;
+  font-size:12px;font-weight:600;color:var(--mt);
+  letter-spacing:-.2px;
+}
+
+.wrap{max-width:1200px;margin:0 auto;padding:24px 16px 100px;}
+
+/* ── CYCLE VISUAL ── */
+.cycle-row{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.cycle-lbl{
+  font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);margin-right:4px;
+}
+.pip{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;letter-spacing:-.2px;
+  border:1px solid;
+  transition:transform .15s;cursor:default;
+}
+.pip:hover{transform:scale(1.12);}
+.pip.m{background:var(--mb);border-color:var(--mbd);color:var(--mt);}
+.pip.e{background:var(--eb);border-color:var(--ebd);color:var(--et);}
+.pip.n{background:var(--nb);border-color:var(--nbd);color:var(--nt);}
+.pip.o{background:var(--ob);border-color:var(--obd);color:var(--ot);}
+.cycle-arrow{font-size:14px;color:var(--muted);margin-left:4px;}
+
+/* ── SETUP CARD ── */
+.setup{
+  background:var(--paper);
+  border-radius:18px;
+  padding:22px 24px;
+  margin-bottom:24px;
+  box-shadow:0 1px 0 var(--rule),0 2px 8px rgba(0,0,0,.04);
+}
+.setup-lbl{
+  font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:18px;
+}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;align-items:end;}
+.field label{
+  display:block;font-size:12px;font-weight:600;
+  color:var(--muted);margin-bottom:7px;letter-spacing:-.1px;
+}
+.field input,.field select{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--rule);
+  border-radius:12px;
+  color:var(--ink);
+  font-family:inherit;
+  font-size:15px;
+  font-weight:500;
+  padding:11px 14px;
+  outline:none;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color .2s,box-shadow .2s;
+  letter-spacing:-.2px;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,122,255,.15);
+}
+.btn-gen{
+  width:100%;
+  background:var(--accent);
+  color:#fff;
+  border:none;border-radius:12px;
+  font-family:inherit;font-weight:600;font-size:15px;
+  letter-spacing:-.2px;
+  padding:13px;cursor:pointer;height:48px;
+  transition:background .15s,transform .1s,box-shadow .15s;
+  box-shadow:0 2px 8px rgba(0,122,255,.3);
+}
+.btn-gen:hover{background:#0071eb;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,122,255,.35);}
+.btn-gen:active{transform:translateY(0);}
+
+/* ── STATS ── */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:12px;
+  margin-bottom:24px;
+}
+.stat{
+  background:var(--paper);
+  border-radius:16px;
+  padding:16px 18px 14px;
+  box-shadow:0 1px 0 var(--rule),0 2px 6px rgba(0,0,0,.04);
+}
+.stat-l{
+  font-size:11px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+}
+.stat-v{font-size:26px;font-weight:700;line-height:1;letter-spacing:-.5px;}
+.stat-s{font-size:12px;color:var(--muted);margin-top:5px;font-weight:500;}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.leg{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:30px;
+  font-size:12px;font-weight:600;border:1px solid;
+  letter-spacing:-.1px;
+}
+.leg-dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+.leg.m{background:var(--mb);border-color:var(--mbd);color:var(--mt);}
+.leg.e{background:var(--eb);border-color:var(--ebd);color:var(--et);}
+.leg.n{background:var(--nb);border-color:var(--nbd);color:var(--nt);}
+.leg.o{background:var(--ob);border-color:var(--obd);color:var(--ot);}
+
+/* ── SECTION HEADER ── */
+.sec-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;flex-wrap:wrap;gap:10px;
+}
+.sec-title{font-size:20px;font-weight:700;letter-spacing:-.4px;color:var(--ink);}
+.toggle{
+  display:flex;
+  background:var(--bg);
+  border-radius:9px;padding:2px;
+  border:1px solid var(--rule);
+}
+.tbtn{
+  background:transparent;border:none;
+  padding:7px 16px;
+  font-family:inherit;font-size:13px;font-weight:500;
+  color:var(--muted);cursor:pointer;border-radius:7px;
+  transition:background .15s,color .15s,box-shadow .15s;
+  letter-spacing:-.1px;
+}
+.tbtn.active{
+  background:var(--paper);color:var(--ink);font-weight:600;
+  box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 0 rgba(0,0,0,.04);
+}
+
+/* ── QUARTER LABEL ── */
+.quarter-lbl{
+  font-size:13px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted);
+  padding:18px 0 10px;border-bottom:0.5px solid var(--rule);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.quarter-lbl::after{content:'';flex:1;height:1px;background:var(--rule);}
+
+/* ── GRID ── */
+.months-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:12px;margin-bottom:32px;
+}
+.mcrd{
+  background:var(--paper);border-radius:16px;overflow:hidden;
+  box-shadow:0 1px 0 var(--rule),0 2px 8px rgba(0,0,0,.04);
+  transition:transform .2s,box-shadow .2s;
+}
+.mcrd:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.1);}
+.mcrd-hdr{
+  padding:14px 16px 10px;
+  border-bottom:0.5px solid var(--rule);
+  display:flex;align-items:baseline;justify-content:space-between;
+}
+.mcrd-name{font-size:17px;font-weight:700;letter-spacing:-.4px;}
+.mcrd-yr{color:var(--muted);font-size:13px;font-weight:500;}
+.mcrd-mini{
+  display:flex;gap:12px;padding:7px 16px;
+  background:var(--bg);border-bottom:0.5px solid var(--rule);
+  flex-wrap:wrap;
+}
+.mcrd-mini span{font-size:11px;font-weight:600;}
+.cal-body{padding:10px 10px 12px;}
+.cal-dns{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
+.cal-dn{
+  text-align:center;font-size:10px;font-weight:600;
+  color:var(--muted);padding:3px 0;letter-spacing:-.1px;
+}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cday{
+  aspect-ratio:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  border-radius:8px;font-size:11px;font-weight:600;
+  border:1px solid transparent;
+  transition:transform .1s;cursor:default;letter-spacing:-.1px;
+}
+.cday:not(.cday-empty):hover{transform:scale(1.15);z-index:2;}
+.cday.m{background:var(--mb);border-color:var(--mbd);color:var(--mt);}
+.cday.e{background:var(--eb);border-color:var(--ebd);color:var(--et);}
+.cday.n{background:var(--nb);border-color:var(--nbd);color:var(--nt);}
+.cday.o{background:var(--ob);border-color:var(--obd);color:var(--ot);}
+.cday.none{color:var(--muted);}
+.cday.today{
+  outline:2.5px solid var(--accent);outline-offset:1px;
+  font-weight:800;
+}
+.dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6;margin-top:1px;}
+
+/* ── LIST ── */
+.month-sec{margin-bottom:28px;}
+.month-sec-hdr{
+  display:flex;align-items:baseline;gap:10px;
+  padding-bottom:12px;border-bottom:0.5px solid var(--rule);margin-bottom:10px;
+}
+.month-sec-name{font-size:20px;font-weight:700;letter-spacing:-.4px;}
+.month-sec-yr{color:var(--muted);font-size:15px;font-weight:500;}
+.day-list{display:flex;flex-direction:column;gap:3px;}
+.drow{
+  display:grid;grid-template-columns:38px 1fr 130px 90px;
+  align-items:center;padding:9px 14px;border-radius:10px;
+  gap:10px;border:1px solid transparent;
+  transition:background .1s;
+}
+.drow:hover{filter:brightness(.97);}
+.drow.m{background:var(--mb);border-color:var(--mbd);}
+.drow.e{background:var(--eb);border-color:var(--ebd);}
+.drow.n{background:var(--nb);border-color:var(--nbd);}
+.drow.o{background:var(--ob);border-color:var(--obd);}
+.drow.today{outline:2px solid var(--accent);outline-offset:-1px;}
+.drow-num{font-weight:800;font-size:13px;text-align:right;color:var(--ink);letter-spacing:-.2px;}
+.drow-day{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:-.1px;}
+.drow-sh{font-size:12px;font-weight:700;letter-spacing:-.1px;}
+.drow.m .drow-sh{color:var(--mt);}
+.drow.e .drow-sh{color:var(--et);}
+.drow.n .drow-sh{color:var(--nt);}
+.drow.o .drow-sh{color:var(--ot);}
+.drow-note{font-size:11px;color:var(--muted);font-weight:500;}
+
+/* ── OFF TIMELINE ── */
+.off-sec{margin-bottom:36px;}
+.off-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.off-hdr-lbl{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+.off-badge{
+  background:var(--ob);border:1px solid var(--obd);
+  color:var(--ot);border-radius:20px;
+  padding:5px 13px;font-size:12px;font-weight:600;letter-spacing:-.1px;
+}
+.off-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.ocard{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-left:4px solid var(--obd);
+  border-radius:14px;padding:14px 16px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 1px 0 var(--rule),0 1px 4px rgba(0,0,0,.03);
+  transition:transform .15s,box-shadow .15s;
+}
+.ocard:hover{transform:translateX(3px);box-shadow:0 3px 12px rgba(0,0,0,.08);}
+.ocard.past{opacity:.45;}
+.ocard.past{border-left-color:var(--rule);}
+.ocard.cur{border-color:var(--mbd);border-left-color:var(--mt);}
+.ocard.future{border-color:var(--obd);border-left-color:var(--ot);}
+.ocard-date{text-align:center;min-width:44px;}
+.ocard-num{font-size:28px;font-weight:800;line-height:1;letter-spacing:-.5px;}
+.ocard.past .ocard-num,.ocard.past .ocard-wday{color:var(--muted)!important;}
+.ocard.future .ocard-num{color:var(--ot);}
+.ocard.cur .ocard-num{color:var(--mt);}
+.ocard-mo{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-top:2px;letter-spacing:.04em;}
+.odiv{width:0.5px;height:38px;background:var(--rule);flex-shrink:0;}
+.ocard-info{flex:1;}
+.ocard-wday{font-size:14px;font-weight:700;letter-spacing:-.2px;}
+.ocard.future .ocard-wday{color:var(--ink);}
+.ocard.cur .ocard-wday{color:var(--ink);}
+.ocard-full{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;}
+.otag{
+  border-radius:8px;padding:4px 9px;
+  font-size:11px;font-weight:700;white-space:nowrap;
+  border:1px solid;letter-spacing:-.1px;
+}
+.otag.past{background:var(--bg);border-color:var(--rule);color:var(--muted);}
+.otag.cur{background:var(--mb);border-color:var(--mbd);color:var(--mt);}
+.otag.future{background:var(--ob);border-color:var(--obd);color:var(--ot);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:80px 20px;color:var(--muted);}
+.empty-icon{font-size:56px;margin-bottom:16px;}
+.empty h3{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.4px;}
+.empty p{font-size:15px;line-height:1.6;max-width:320px;margin:0 auto;font-weight:400;color:var(--muted);}
+
+#results{display:none;}
+
+/* ── PRINT ── */
+.print-btn{
+  background:transparent;border:1px solid var(--rule);border-radius:10px;
+  font-family:inherit;font-size:12px;font-weight:600;
+  color:var(--ink2);padding:8px 16px;cursor:pointer;
+  transition:background .15s,border-color .15s;letter-spacing:-.1px;
+}
+.print-btn:hover{background:var(--bg);border-color:var(--accent);color:var(--accent);}
+
+/* ── SCROLL TO TOP ── */
+.fab{
+  position:fixed;bottom:30px;right:24px;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--accent);color:#fff;border:none;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,122,255,.4);
+  display:none;align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .15s;z-index:300;
+}
+.fab:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,122,255,.5);}
+.fab.show{display:flex;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:540px){
+  .drow{grid-template-columns:30px 1fr 100px;}
+  .drow-note{display:none;}
+  .fields{grid-template-columns:1fr;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ── PRINT ── */
+@media print{
+  .hdr,.setup,.sec-row .toggle,.print-btn,.fab,body::after{display:none!important;}
+  .mcrd{break-inside:avoid;}
+  body{background:#fff;}
+  .stat{box-shadow:none;border:1px solid #ddd;}
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="wrap">
+
+  <!-- Page title -->
+  <div style="text-align:center;margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--rule);">
+    <h1 style="font-size:34px;font-weight:700;letter-spacing:-.6px;color:var(--ink);text-align:center;width:100%;">Duty Roster</h1>
+  </div>
+
+  <!-- Cycle visual -->
+  <div class="cycle-row">
+    <span class="cycle-lbl">8-Day Cycle</span>
+    <div class="pip m">M</div><div class="pip m">M</div>
+    <div class="pip e">E</div><div class="pip e">E</div>
+    <div class="pip n">N</div><div class="pip n">N</div>
+    <div class="pip o">O</div><div class="pip o">O</div>
+    <span class="cycle-arrow">↻</span>
+  </div>
+
+  <!-- Setup -->
+  <div class="setup">
+    <div class="setup-lbl">Configure Your Roster</div>
+    <div class="fields">
+      <div class="field">
+        <label>Cycle Start Date</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="field">
+        <label>Starting Phase</label>
+        <select id="startPhase">
+          <option value="0">Morning</option>
+          <option value="2">Evening</option>
+          <option value="4">Night</option>
+          <option value="6">Post-Night Off</option>
+        </select>
+      </div>
+      <div class="field">
+        <button class="btn-gen" onclick="generate()">Generate Roster</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">📅</div>
+    <h3>Ready to plan your year</h3>
+    <p>Set your cycle start date and phase, then tap <strong>Generate 1-Year Plan</strong>.</p>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <!-- Stats -->
+    <div class="stats" id="statsBar"></div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="leg m"><div class="leg-dot"></div>☀️ Morning</div>
+      <div class="leg e"><div class="leg-dot"></div>🌆 Evening</div>
+      <div class="leg n"><div class="leg-dot"></div>🌙 Night</div>
+      <div class="leg o"><div class="leg-dot"></div>✅ Day Off</div>
+    </div>
+
+    <!-- View toggle -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:18px;">
+      <div class="toggle">
+        <button class="tbtn active" id="btnGrid" onclick="setView('grid')">🗓 Grid</button>
+        <button class="tbtn" id="btnList" onclick="setView('list')">📋 List</button>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="gridView"></div>
+
+    <!-- List -->
+    <div id="listView" style="display:none"></div>
+
+    <!-- Off Days -->
+    <div class="off-sec">
+      <div class="off-hdr">
+        <span class="off-hdr-lbl">Post-Night Days Off</span>
+        <span class="off-badge" id="offBadge"></span>
+      </div>
+      <div class="off-grid" id="offGrid"></div>
+    </div>
+
+  </div><!-- /results -->
+</div><!-- /wrap -->
+
+<!-- Scroll-to-top FAB -->
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const MF=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const DF=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const SC={
+  morning:{cls:'m',lbl:'Morning',em:'☀️'},
+  evening:{cls:'e',lbl:'Evening',em:'🌆'},
+  night:  {cls:'n',lbl:'Night',  em:'🌙'},
+  off:    {cls:'o',lbl:'Day Off',em:'✅'}
+};
+const STAT_COLORS={duty:'var(--ink)',off:'var(--ot)',cycles:'var(--blue)',next:'var(--orange)',today:'var(--ink)'};
+
+const today=new Date(); today.setHours(0,0,0,0);
+let sched={};
+
+// Init
+document.getElementById('startDate').value=ds(today);
+
+// Scroll FAB
+window.addEventListener('scroll',()=>{
+  document.getElementById('fab').classList.toggle('show',window.scrollY>300);
+});
+
+function ds(d){return d.toISOString().slice(0,10);}
+function addD(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function shiftOf(p){const x=p%8;return x<2?'morning':x<4?'evening':x<6?'night':'off';}
+
+function generate(){
+  const si=document.getElementById('startDate').value;
+  if(!si){alert('Please select a cycle start date.');return;}
+  const sd=new Date(si); sd.setHours(0,0,0,0);
+  const phase=parseInt(document.getElementById('startPhase').value);
+
+  // 12 months
+  const end=new Date(sd); end.setFullYear(end.getFullYear()+1);
+  const days=Math.ceil((end-sd)/86400000);
+  sched={};
+  for(let i=0;i<days;i++) sched[ds(addD(sd,i))]=shiftOf(phase+i);
+
+  const entries=Object.entries(sched).sort();
+  const offDays=entries.filter(([,s])=>s==='off');
+  const dutyDays=entries.filter(([,s])=>s!=='off');
+
+  // Build off pairs
+  const pairs=[]; let pi=0,pn=1;
+  const ol=offDays.map(([d])=>new Date(d));
+  while(pi<ol.length){
+    if(pi+1<ol.length&&(ol[pi+1]-ol[pi])/86400000===1){pairs.push({days:[ol[pi],ol[pi+1]],num:pn++});pi+=2;}
+    else{pairs.push({days:[ol[pi]],num:pn++});pi++;}
+  }
+
+  let nextOff=null;
+  for(const[d,s]of entries){const dd=new Date(d);if(s==='off'&&dd>=today){nextOff=dd;break;}}
+  const todayShift=sched[ds(today)];
+  const diffNext=nextOff?Math.round((nextOff-today)/86400000):null;
+
+  // ── STATS ──
+  document.getElementById('statsBar').innerHTML=[
+    {l:'Duty Days',   v:dutyDays.length, c:'var(--ink)'},
+    {l:'Days Off',    v:offDays.length,  c:'var(--ot)'},
+    {l:'Off Cycles',  v:pairs.length,    c:'var(--blue)'},
+    {l:'Next Off',
+     v:nextOff?nextOff.toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'—',
+     c:'var(--orange)',
+     s:diffNext===null?'—':diffNext===0?'🎉 Today!':`in ${diffNext} day${diffNext!==1?'s':''}`},
+    {l:"Today's Shift",
+     v:todayShift?SC[todayShift].em+' '+SC[todayShift].lbl:'Outside range',
+     c:'var(--ink)',vs:14,
+     s:todayShift==='off'?'Enjoy your rest!':todayShift?'On duty today':''},
+  ].map(x=>`
+    <div class="stat">
+      <div class="stat-l">${x.l}</div>
+      <div class="stat-v" style="font-size:${x.vs||26}px;color:${x.c}">${x.v}</div>
+      ${x.s?`<div class="stat-s">${x.s}</div>`:''}
+    </div>`).join('');
+
+  // Build 12 months
+  const months=[];
+  let md=new Date(sd.getFullYear(),sd.getMonth(),1);
+  for(let i=0;i<12;i++){months.push(new Date(md));md.setMonth(md.getMonth()+1);}
+
+  // ── GRID VIEW (quarters) ──
+  const qLabels=['Q1','Q2','Q3','Q4'];
+  let gridHTML='';
+  for(let q=0;q<4;q++){
+    const qMonths=months.slice(q*3,(q+1)*3);
+    const qStart=qMonths[0],qEnd=qMonths[2];
+    gridHTML+=`<div class="quarter-lbl">${qLabels[q]} — ${MF[qStart.getMonth()]} to ${MF[qEnd.getMonth()]} ${qEnd.getFullYear()}</div>`;
+    gridHTML+='<div class="months-grid">';
+    gridHTML+=qMonths.map(mDate=>{
+      const yr=mDate.getFullYear(),mo=mDate.getMonth();
+      const dim=new Date(yr,mo+1,0).getDate(),fd=new Date(yr,mo,1).getDay();
+      const cnt={morning:0,evening:0,night:0,off:0};
+      for(let d=1;d<=dim;d++){const sh=sched[ds(new Date(yr,mo,d))];if(sh)cnt[sh]++;}
+      return `<div class="mcrd">
+        <div class="mcrd-hdr">
+          <span class="mcrd-name">${MF[mo]}</span>
+          <span class="mcrd-yr">${yr}</span>
+        </div>
+        <div class="mcrd-mini">
+          <span style="color:var(--mt)">☀️ <strong>${cnt.morning}</strong></span>
+          <span style="color:var(--et)">🌆 <strong>${cnt.evening}</strong></span>
+          <span style="color:var(--nt)">🌙 <strong>${cnt.night}</strong></span>
+          <span style="color:var(--ot)">✅ <strong>${cnt.off}</strong></span>
+        </div>
+        <div class="cal-body">
+          <div class="cal-dns">${DS.map(d=>`<div class="cal-dn">${d}</div>`).join('')}</div>
+          <div class="cal-days">
+            ${Array(fd).fill('<div class="cday cday-empty"></div>').join('')}
+            ${Array.from({length:dim},(_,i)=>i+1).map(d=>{
+              const dss=ds(new Date(yr,mo,d));
+              const sh=sched[dss]||null;
+              const cls=sh?SC[sh].cls:'none';
+              const isT=dss===ds(today)?'today':'';
+              return `<div class="cday ${cls} ${isT}" title="${sh?SC[sh].lbl:''}">${d}${sh&&sh!=='off'?'<div class="dot"></div>':''}</div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    gridHTML+='</div>';
+  }
+  document.getElementById('gridView').innerHTML=gridHTML;
+
+  // ── LIST VIEW (quarters) ──
+  let listHTML='';
+  for(let q=0;q<4;q++){
+    const qMonths=months.slice(q*3,(q+1)*3);
+    const qStart=qMonths[0],qEnd=qMonths[2];
+    listHTML+=`<div class="quarter-lbl">${qLabels[q]} — ${MF[qStart.getMonth()]} to ${MF[qEnd.getMonth()]} ${qEnd.getFullYear()}</div>`;
+    listHTML+=qMonths.map(mDate=>{
+      const yr=mDate.getFullYear(),mo=mDate.getMonth();
+      const dim=new Date(yr,mo+1,0).getDate();
+      return `<div class="month-sec">
+        <div class="month-sec-hdr">
+          <span class="month-sec-name">${MF[mo]}</span>
+          <span class="month-sec-yr">${yr}</span>
+        </div>
+        <div class="day-list">
+          ${Array.from({length:dim},(_,i)=>i+1).map(d=>{
+            const td=new Date(yr,mo,d),dss=ds(td),sh=sched[dss];
+            if(!sh)return '';
+            const isT=dss===ds(today)?'today':'';
+            return `<div class="drow ${SC[sh].cls} ${isT}">
+              <div class="drow-num">${d}</div>
+              <div class="drow-day">${DF[td.getDay()].slice(0,3)}, ${d} ${MS[mo]}</div>
+              <div class="drow-sh">${SC[sh].em} ${SC[sh].lbl}</div>
+              <div class="drow-note">${sh==='off'?'Rest Day':'On Duty'}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('listView').innerHTML=listHTML;
+
+  // ── OFF TIMELINE ──
+  document.getElementById('offBadge').textContent=`${offDays.length} days · ${pairs.length} cycles`;
+  document.getElementById('offGrid').innerHTML=pairs.map(pair=>pair.days.map((d,pi)=>{
+    const dss=ds(d),isPast=d<today,isToday=dss===ds(today);
+    const state=isPast?'past':isToday?'cur':'future';
+    const pl=pair.days.length===2?`Cycle ${pair.num} · ${pi+1}/2`:`Cycle ${pair.num}`;
+    return `<div class="ocard ${state}">
+      <div class="ocard-date">
+        <div class="ocard-num">${d.getDate()}</div>
+        <div class="ocard-mo">${MS[d.getMonth()]} ${d.getFullYear()}</div>
+      </div>
+      <div class="odiv"></div>
+      <div class="ocard-info">
+        <div class="ocard-wday">${DF[d.getDay()]}</div>
+        <div class="ocard-full">${d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      <div class="otag ${state}">${isPast?'✓ Done':isToday?'Today!':pl}</div>
+    </div>`;
+  }).join('')).join('');
+
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('results').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setView(v){
+  document.getElementById('gridView').style.display=v==='grid'?'block':'none';
+  document.getElementById('listView').style.display=v==='list'?'block':'none';
+  document.getElementById('btnGrid').classList.toggle('active',v==='grid');
+  document.getElementById('btnList').classList.toggle('active',v==='list');
+}
+</script>
+</body>
+</html>
